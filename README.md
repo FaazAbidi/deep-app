@@ -1,2 +1,2 @@
 # deep-app
-Minimal Note Taking App
+Minimal Note Taking Mobile App
