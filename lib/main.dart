@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_page_transition/flutter_page_transition.dart';
 import 'package:flutter_page_transition/page_transition_type.dart';
 import 'package:deep/pageTransitions.dart';
+import 'package:deep/savedWorkPage.dart';
 
 void main() {
   runApp(MyApp());
@@ -101,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                 RawMaterialButton(
                   onPressed: () {
                     HapticFeedback.selectionClick();
-                    Navigator.of(context).push(FadeRoute(page: writingPage()));
+                    Navigator.of(context).push(FadeRoute(page: savedNotes()));
                   },
                   elevation: 50.0,
                   fillColor: Theme.of(context).accentColor,
