@@ -1,5 +1,5 @@
 name: deep
-description: A new Flutter project.
+description: Minimal Note Taking App
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -31,6 +31,8 @@ dependencies:
   icon_shadow: ^1.0.1
   flutter_page_transition: ^0.1.0
   shared_preferences: ^0.5.8
+  aad_oauth: ^0.1.9
+  simple_auth: ^2.0.7
 
 dev_dependencies:
   flutter_test:

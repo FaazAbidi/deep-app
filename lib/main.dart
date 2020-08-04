@@ -1,10 +1,10 @@
 import 'package:deep/writingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_page_transition/flutter_page_transition.dart';
-import 'package:flutter_page_transition/page_transition_type.dart';
 import 'package:deep/pageTransitions.dart';
 import 'package:deep/savedWorkPage.dart';
+import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -23,8 +23,7 @@ class MyApp extends StatelessWidget {
         accentColor: Color.fromRGBO(235, 237, 235, 1),
         fontFamily: "MavenPro",
         textTheme: TextTheme(
-          bodyText1: TextStyle(fontSize: 50, fontFamily: "MavenPro")
-        ),
+            bodyText1: TextStyle(fontSize: 50, fontFamily: "MavenPro")),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
@@ -40,6 +39,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -74,31 +74,33 @@ class _HomePageState extends State<HomePage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: <Widget>[
-                    Container(
-                      height: 60,
-                      width: 60,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black,
-                            spreadRadius: 3.3,
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          ),
-                        ]),),
-                        Icon(
-                      Icons.border_color,
-                      size: screenWidth * 0.070,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ],),
+                      Container(
+                        height: 60,
+                        width: 60,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).accentColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black,
+                                  spreadRadius: 3.3,
+                                  blurRadius: 5,
+                                  offset: Offset(0, 2)),
+                            ]),
+                      ),
+                      Icon(
+                        Icons.border_color,
+                        size: screenWidth * 0.070,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ],
+                  ),
                   shape: CircleBorder(),
                 ),
-                SizedBox(width: 45,)
-                ,
+                SizedBox(
+                  width: 45,
+                ),
                 RawMaterialButton(
                   onPressed: () {
                     HapticFeedback.selectionClick();
@@ -109,27 +111,28 @@ class _HomePageState extends State<HomePage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: <Widget>[
-                    Container(
-                      height: 60,
-                      width: 60,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).accentColor,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black,
-                            spreadRadius: 3.3,
-                            blurRadius: 5,
-                            offset: Offset(0,2)
-                          ),
-                        ]),),
-                        Icon(
-                      Icons.library_books,
-                      size: screenWidth * 0.070,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ],),
+                      Container(
+                        height: 60,
+                        width: 60,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).accentColor,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black,
+                                  spreadRadius: 5,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 0)),
+                            ]),
+                      ),
+                      Icon(
+                        Icons.library_books,
+                        size: screenWidth * 0.070,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ],
+                  ),
                   shape: CircleBorder(),
                 ),
               ],
@@ -140,9 +143,8 @@ class _HomePageState extends State<HomePage> {
             Text(
               'deep',
               style: TextStyle(
-                color: Theme.of(context).accentColor,
-                fontSize: (screenHeight+screenWidth) * 0.02
-                ),
+                  color: Theme.of(context).accentColor,
+                  fontSize: (screenHeight + screenWidth) * 0.02),
             ),
           ],
         ),

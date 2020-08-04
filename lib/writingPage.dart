@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:deep/savedWorkPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ class writingPage extends StatelessWidget {
   Widget build(BuildContext context) {
 
     String note = "";
+    List<String> notesKeys = [];
 
     return SafeArea(
       child: Scaffold(
@@ -24,6 +26,7 @@ class writingPage extends StatelessWidget {
             if (note != ""){
               print(note);
               saving.setString(formattedDate, note);
+              notesKeys.add(formattedDate);
             }
             return true;
           },
@@ -56,14 +59,6 @@ class writingPage extends StatelessWidget {
                 ),
               
               ),
-              // FlatButton(
-              //   textColor: Colors.white,
-              //   child: Text('HI'),
-              //   onPressed: () async {
-              //     SharedPreferences saving = await SharedPreferences.getInstance();
-              //         saving.setString('1', 'my note!!');
-              //   },
-              // )
             ],
           ),
         ),
