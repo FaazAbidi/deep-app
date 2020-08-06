@@ -1,8 +1,9 @@
+import 'package:deep/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/src/rendering/box.dart';
+import 'package:deep/pageTransitions.dart';
 
 class MyBehavior extends ScrollBehavior {
   @override
@@ -38,13 +39,10 @@ class _savedNotesState extends State<savedNotes> {
     notes.forEach((k, v) {
       widgets.add(Container(
         child: Padding(
-          padding:
-              const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
+          padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
           child: InkWell(
             highlightColor: Colors.transparent,
-            onTap: () {
-    
-  },
+            
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,7 +50,7 @@ class _savedNotesState extends State<savedNotes> {
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: Text(
-                      v.length > 10 ? v.substring(0, 10) + ' ...' : v,
+                      v.length > 10 ? v.substring(0, 20) + ' ...' : v,
                       style: TextStyle(
                           color: Theme.of(context).accentColor, fontSize: 22),
                     ),
@@ -83,10 +81,10 @@ class _savedNotesState extends State<savedNotes> {
       if (allKeys.keys.contains(element) == false) {
         // allKeys.add([element, value]);
         allKeys[element] = value;
-        print(allKeys);
         // allNotes.add(prefs.getString(element));
       }
     });
+    
   }
 
   setData() {
@@ -107,28 +105,34 @@ class _savedNotesState extends State<savedNotes> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              RawMaterialButton(
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                      },
-                      elevation: 50.0,
-                      child: Icon(
-                            Icons.arrow_back_ios,
-                            size: 30,
-                            color: Theme.of(context).accentColor,
-                          ),
-                      
-                    ),
-                    Text(
-                      "Notes",
-                      style: TextStyle(
-                          color: Theme.of(context).accentColor, fontSize: 30),
-                    ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Row(
+              children: <Widget>[
+                RawMaterialButton(
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: EdgeInsets.only(top:5),
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    Navigator.of(context).pop(FadeRoute(page: MyApp()));
+                  },
+                  child: Icon(
+                    Icons.arrow_back_ios,
+                    size: 22,
+                    color: Theme.of(context).accentColor,
+                  ),
+                ),
+                
+                Text(
+                  "Notes",
+                  style: TextStyle(
+                      color: Theme.of(context).accentColor, fontSize: 28),
+                ),
+              ],
+            ),
           ),
-          
           Expanded(
             child: ScrollConfiguration(
               behavior: MyBehavior(),
