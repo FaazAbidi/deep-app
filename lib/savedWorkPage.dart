@@ -35,14 +35,16 @@ class _savedNotesState extends State<savedNotes> {
   }
 
   notesItem(Map notes) {
+    if (notes.keys.length < 1) {
+      return [];
+    }
     List<Widget> widgets = [];
     notes.forEach((k, v) {
       widgets.add(Container(
         child: Padding(
           padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
           child: InkWell(
-            highlightColor: Colors.transparent,
-            
+            onTap: () {},
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,7 +52,7 @@ class _savedNotesState extends State<savedNotes> {
                   Padding(
                     padding: const EdgeInsets.all(15),
                     child: Text(
-                      v.length > 10 ? v.substring(0, 20) + ' ...' : v,
+                      v.length > 20 ? v.substring(0, 20) + ' ...' : v,
                       style: TextStyle(
                           color: Theme.of(context).accentColor, fontSize: 22),
                     ),
@@ -84,7 +86,6 @@ class _savedNotesState extends State<savedNotes> {
         // allNotes.add(prefs.getString(element));
       }
     });
-    
   }
 
   setData() {
@@ -97,54 +98,64 @@ class _savedNotesState extends State<savedNotes> {
     });
   }
 
+  emptyOrnot() {
+    List listView_list = notesItem(allKeys);
+    if (listView_list.length > 0) {
+      return ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(top: 10),
+        children: listView_list,
+      );
+    } else {
+      return Center(
+        child: Text(
+          "No saved notes",
+          style: TextStyle(color: Color.fromRGBO(255, 255, 255, 0.6), fontSize: 20),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Row(
-              children: <Widget>[
-                RawMaterialButton(
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: EdgeInsets.only(top:5),
-                  highlightColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  onPressed: () {
-                    HapticFeedback.selectionClick();
-                    Navigator.of(context).pop(FadeRoute(page: MyApp()));
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    size: 22,
-                    color: Theme.of(context).accentColor,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Row(
+                children: <Widget>[
+                  RawMaterialButton(
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: EdgeInsets.only(top: 5),
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      Navigator.of(context).pop(FadeRoute(page: MyApp()));
+                    },
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      size: 22,
+                      color: Theme.of(context).accentColor,
+                    ),
                   ),
-                ),
-                
-                Text(
-                  "Notes",
-                  style: TextStyle(
-                      color: Theme.of(context).accentColor, fontSize: 28),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ScrollConfiguration(
-              behavior: MyBehavior(),
-              child: ListView(
-                shrinkWrap: true,
-                padding: EdgeInsets.only(top: 10),
-                children: notesItem(allKeys),
+                  Text(
+                    "Notes",
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 28),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
-      ),
+            Expanded(
+              child: ScrollConfiguration(
+                  behavior: MyBehavior(), child: emptyOrnot()),
+            )
+          ]),
     ));
   }
 }

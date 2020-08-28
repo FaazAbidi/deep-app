@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'dart:io';
 
 class writingPage extends StatefulWidget {
   const writingPage({Key key}) : super(key: key);
@@ -68,9 +69,9 @@ class _writingPageState extends State<writingPage> {
                       splashColor: Colors.transparent,
                       onPressed: () async {
                         HapticFeedback.selectionClick();
-
-                        SharedPreferences saving =
-                            await SharedPreferences.getInstance();
+                        await FocusScope.of(context).requestFocus(FocusNode());
+                        await sleep(const Duration(milliseconds: 200));
+                        SharedPreferences saving = await SharedPreferences.getInstance();
                         DateTime now = DateTime.now();
                         String formattedDate =
                             DateFormat('hh:mm a EEE d MMM yy').format(now);
@@ -89,7 +90,7 @@ class _writingPageState extends State<writingPage> {
                       ),
                     ),
                     Text(
-                      "Thoughts",
+                      "Notepad",
                       style: TextStyle(color: writingColor, fontSize: 28),
                     ),
                   ],
@@ -116,7 +117,7 @@ class _writingPageState extends State<writingPage> {
                         decoration: TextDecoration.none,
                       ),
                       decoration: InputDecoration(
-                        hintText: ". . . . . . .",
+                        hintText: ". . . .",
                         hintStyle: TextStyle(
                             color: Color.fromRGBO(255, 255, 255, 0.4),
                             fontWeight: FontWeight.normal,
