@@ -1,4 +1,7 @@
 import 'package:deep/main.dart';
+import 'package:deep/widgets/appBarText.dart';
+import 'package:deep/widgets/backButtonOnSaved.dart';
+import 'package:deep/writingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:deep/pageTransitions.dart';
 
 class MyBehavior extends ScrollBehavior {
+  BuildContext context;
+  MyBehavior(
+      this.context
+      );
+
   @override
   Widget buildViewportChrome(
       BuildContext context, Widget child, AxisDirection axisDirection) {
@@ -44,15 +52,18 @@ class _savedNotesState extends State<savedNotes> {
         child: Padding(
           padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              print("pressed");
+              Navigator.of(context).push(FadeRoute(page: writingPage(note: v)));
+            },
             child: Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(15),
+                    padding: EdgeInsets.all(10),
                     child: Text(
-                      v.length > 20 ? v.substring(0, 20) + ' ...' : v,
+                      v.length > 20 ? v.substring(0, 20) + '...' : v,
                       style: TextStyle(
                           color: Theme.of(context).accentColor, fontSize: 22),
                     ),
@@ -109,7 +120,7 @@ class _savedNotesState extends State<savedNotes> {
     } else {
       return Center(
         child: Text(
-          "No saved notes",
+          "empty",
           style: TextStyle(color: Color.fromRGBO(255, 255, 255, 0.6), fontSize: 20),
         ),
       );
@@ -118,6 +129,9 @@ class _savedNotesState extends State<savedNotes> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return SafeArea(
         child: Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -125,35 +139,17 @@ class _savedNotesState extends State<savedNotes> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 20),
+              padding: EdgeInsets.only(top: screenHeight * 0.02),
               child: Row(
                 children: <Widget>[
-                  RawMaterialButton(
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    padding: EdgeInsets.only(top: 5),
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onPressed: () {
-                      HapticFeedback.selectionClick();
-                      Navigator.of(context).pop(FadeRoute(page: MyApp()));
-                    },
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      size: 22,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  Text(
-                    "Notes",
-                    style: TextStyle(
-                        color: Theme.of(context).accentColor, fontSize: 28),
-                  ),
+                  backButtonOnSaved(context),
+                  appBarText(context, "Notes")
                 ],
               ),
             ),
             Expanded(
               child: ScrollConfiguration(
-                  behavior: MyBehavior(), child: emptyOrnot()),
+                  behavior: MyBehavior(context), child: emptyOrnot()),
             )
           ]),
     ));

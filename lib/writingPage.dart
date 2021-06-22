@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:deep/homepage.dart';
 import 'package:deep/main.dart';
 import 'package:deep/pageTransitions.dart';
 import 'package:deep/savedWorkPage.dart';
+import 'package:deep/widgets/appBarText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,17 +11,23 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 
 class writingPage extends StatefulWidget {
-  const writingPage({Key key}) : super(key: key);
+  String note;
+
+   writingPage({Key key, this.note}) : super(key: key);
 
   @override
-  _writingPageState createState() => _writingPageState();
+  _writingPageState createState() => _writingPageState(note);
 }
 
 class _writingPageState extends State<writingPage> {
+  String note;
+  _writingPageState(this.note);
   Color writingColor = Color.fromRGBO(235, 237, 235, 1);
-  String note = "";
+  double appBarTextOpacity = 1.0;
   List<String> notesKeys = [];
   FocusNode _focus = new FocusNode();
+  TextEditingController _textEditingController;
+  bool focus = false;
 
   changeColor() {
     setState(() {
@@ -35,10 +43,19 @@ class _writingPageState extends State<writingPage> {
 
   void _onFocusChange() {
     changeColor();
+    appBarTextOpacity = 0.6;
   }
 
   @override
   Widget build(BuildContext context) {
+    // double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    if (note != "") {
+      _textEditingController = new TextEditingController(text: note);
+    }
+
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
@@ -69,8 +86,8 @@ class _writingPageState extends State<writingPage> {
                       splashColor: Colors.transparent,
                       onPressed: () async {
                         HapticFeedback.selectionClick();
-                        await FocusScope.of(context).requestFocus(FocusNode());
-                        await sleep(const Duration(milliseconds: 200));
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        sleep(const Duration(milliseconds: 200));
                         SharedPreferences saving = await SharedPreferences.getInstance();
                         DateTime now = DateTime.now();
                         String formattedDate =
@@ -80,19 +97,27 @@ class _writingPageState extends State<writingPage> {
                           saving.setString(formattedDate, note);
                           notesKeys.add(formattedDate);
                         }
-
-                        Navigator.of(context).pop(FadeRoute(page: MyApp()));
+                        Navigator.of(context).popUntil((route) => route.isFirst);
                       },
                       child: Icon(
                         Icons.arrow_back_ios,
-                        size: 22,
+                        size: screenWidth * 0.06,
                         color: writingColor,
                       ),
                     ),
-                    Text(
-                      "Notepad",
-                      style: TextStyle(color: writingColor, fontSize: 28),
-                    ),
+                    InkWell(
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        focusColor: Colors.transparent,
+                        onTap: () {
+                        _focus.unfocus();
+                        setState(() {
+                          writingColor = Color.fromRGBO(235, 237, 235, 1);
+                          appBarTextOpacity = 1.0;
+                        });
+                        },
+                        child: appBarText(context, "Notepad", colorOpacity: appBarTextOpacity))
                   ],
                 ),
               ),
@@ -100,8 +125,9 @@ class _writingPageState extends State<writingPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: ScrollConfiguration(
-                    behavior: MyBehavior(),
+                    behavior: MyBehavior(context),
                     child: TextField(
+                      controller: _textEditingController,
                       expands: true,
                       autofocus: false,
                       focusNode: _focus,
@@ -117,7 +143,7 @@ class _writingPageState extends State<writingPage> {
                         decoration: TextDecoration.none,
                       ),
                       decoration: InputDecoration(
-                        hintText: ". . . .",
+                        hintText: "start writing...",
                         hintStyle: TextStyle(
                             color: Color.fromRGBO(255, 255, 255, 0.4),
                             fontWeight: FontWeight.normal,
@@ -127,6 +153,7 @@ class _writingPageState extends State<writingPage> {
                       onChanged: (text) {
                         note = text;
                       },
+
                     ),
                   ),
                 ),
