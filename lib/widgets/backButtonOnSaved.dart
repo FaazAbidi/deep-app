@@ -8,19 +8,20 @@ Widget backButtonOnSaved (context, ) {
   double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
 
-  return RawMaterialButton(
-    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    padding: EdgeInsets.only(top: 5),
+  return InkWell(
     highlightColor: Colors.transparent,
     splashColor: Colors.transparent,
-    onPressed: () {
+    onTap: () {
       HapticFeedback.selectionClick();
       Navigator.of(context).pop(FadeRoute(page: MyApp()));
     },
-    child: Icon(
-      Icons.arrow_back_ios,
-      size: screenWidth * 0.06,
-      color: Theme.of(context).accentColor,
+    child: Padding(
+      padding: EdgeInsets.only(left: 20, right: 12),
+      child: Icon(
+        Icons.arrow_back_ios,
+        size: screenWidth * 0.06,
+        color: Theme.of(context).accentColor,
+      ),
     ),
   );
 }

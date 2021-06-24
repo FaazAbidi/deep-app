@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     mainButton(context, Icons.border_color, writingPage(note: "",)),
-                    SizedBox(width: screenWidth * 0.03),
+                    SizedBox(width: screenWidth * 0.08),
                     mainButton(context, Icons.library_books, savedNotes())
                   ],
                 ),

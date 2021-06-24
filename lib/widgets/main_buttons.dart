@@ -1,49 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import '../pageTransitions.dart';
-import '../writingPage.dart';
 
 Widget mainButton (context, IconData icons, Widget next) {
-  // double screenHeight = MediaQuery.of(context).size.height;
+  double screenHeight = MediaQuery.of(context).size.height;
   double screenWidth = MediaQuery.of(context).size.width;
 
-  return RawMaterialButton(
-    onPressed: () {
+  return InkWell(
+    onTap: () {
       HapticFeedback.selectionClick();
       Navigator.of(context).push(FadeRoute(page: next));
     },
-    elevation: 2.0,
-    fillColor: Theme.of(context).accentColor,
-    focusColor: Colors.transparent,
-    splashColor: Colors.transparent,
-    highlightColor: Colors.transparent,
-    hoverColor: Colors.transparent,
-    child: Stack(
-      alignment: Alignment.center,
-      children: <Widget>[
-        Container(
-          height: 60,
-          width: 60,
-          alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: Theme.of(context).accentColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black,
-                      spreadRadius: 3,
-                      blurRadius: 2,)
-                  ,
-                ]),
+      focusColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+
+    child: Neumorphic(
+        style: NeumorphicStyle(
+            shape: NeumorphicShape.flat,
+            boxShape: NeumorphicBoxShape.circle(),
+            depth: 4,
+            lightSource: LightSource.topLeft,
+            color: Theme.of(context).primaryColor,
+            intensity: 0.8,
+            shadowDarkColor: Colors.black,
+            shadowLightColor: Theme.of(context).primaryColor
         ),
-        Icon(
-          icons,
-          size: screenWidth * 0.070,
-          color: Theme.of(context).primaryColor,
-        ),
-      ],
+        child: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          Container(
+            height: (screenHeight+screenWidth) * 0.08,
+            width: (screenWidth+screenWidth) * 0.08,
+            alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  shape: BoxShape.circle,
+              )
+          ),
+          Icon(
+            icons,
+            size: screenWidth * 0.070,
+            color: Theme.of(context).accentColor,
+          ),
+        ],
+      ),
     ),
-    shape: CircleBorder(),
   );
 }

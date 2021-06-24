@@ -1,9 +1,8 @@
-import 'package:deep/main.dart';
 import 'package:deep/widgets/appBarText.dart';
 import 'package:deep/widgets/backButtonOnSaved.dart';
 import 'package:deep/writingPage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:deep/pageTransitions.dart';
@@ -35,6 +34,7 @@ class _savedNotesState extends State<savedNotes> {
   static List<List> allNotes = [];
   static Map allKeys = {};
   static List<String> notePreviews = [];
+  List listViewList;
 
   @override
   void initState() {
@@ -42,48 +42,74 @@ class _savedNotesState extends State<savedNotes> {
     setData();
   }
 
+  Widget deleteSnackBar (String dateTimeKey) {
+    return SnackBar(
+      backgroundColor: Theme.of(context).accentColor,
+      content: Text("Delete this note?", style: TextStyle(color: Theme.of(context).primaryColor),),
+      action: SnackBarAction(
+        label: 'Yes',
+        textColor: Theme.of(context).primaryColor,
+        onPressed: () async {
+          SharedPreferences deleteInstance = await SharedPreferences.getInstance();
+          print(dateTimeKey);
+          deleteInstance.remove(dateTimeKey);
+        },
+      ),
+    );
+  }
+
+  
+  Widget listContainer(String k, String v) {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
+        child: InkWell(
+          onTap: () {
+            print("pressed");
+            Navigator.of(context).push(FadeRoute(page: writingPage(note: v)));
+          },
+          onLongPress: () {
+            ScaffoldMessenger.of(context).showSnackBar(deleteSnackBar(k));
+          },
+          child: Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    v.length > 13 ? v.substring(0, 13) + '...' : v,
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 22),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Text(
+                    k,
+                    style: TextStyle(
+                        color: Theme.of(context).accentColor, fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
   notesItem(Map notes) {
     if (notes.keys.length < 1) {
       return [];
     }
     List<Widget> widgets = [];
     notes.forEach((k, v) {
-      widgets.add(Container(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
-          child: InkWell(
-            onTap: () {
-              print("pressed");
-              Navigator.of(context).push(FadeRoute(page: writingPage(note: v)));
-            },
-            child: Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      v.length > 20 ? v.substring(0, 20) + '...' : v,
-                      style: TextStyle(
-                          color: Theme.of(context).accentColor, fontSize: 22),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text(
-                      k,
-                      style: TextStyle(
-                          color: Theme.of(context).accentColor, fontSize: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ));
-    });
+      widgets.add(listContainer(k,v));
     return widgets;
+  });
   }
 
   static Future<String> getSavedNotes() async {
@@ -94,6 +120,8 @@ class _savedNotesState extends State<savedNotes> {
       if (allKeys.keys.contains(element) == false) {
         // allKeys.add([element, value]);
         allKeys[element] = value;
+        print(element);
+        print(value);
         // allNotes.add(prefs.getString(element));
       }
     });
@@ -109,13 +137,13 @@ class _savedNotesState extends State<savedNotes> {
     });
   }
 
-  emptyOrnot() {
-    List listView_list = notesItem(allKeys);
-    if (listView_list.length > 0) {
+  emptyOrnot(context) {
+    listViewList = notesItem(allKeys);
+    if (listViewList.length > 0) {
       return ListView(
         shrinkWrap: true,
         padding: EdgeInsets.only(top: 10),
-        children: listView_list,
+        children: listViewList,
       );
     } else {
       return Center(
@@ -149,7 +177,8 @@ class _savedNotesState extends State<savedNotes> {
             ),
             Expanded(
               child: ScrollConfiguration(
-                  behavior: MyBehavior(context), child: emptyOrnot()),
+                  behavior: MyBehavior(context),
+                  child: emptyOrnot(context)),
             )
           ]),
     ));

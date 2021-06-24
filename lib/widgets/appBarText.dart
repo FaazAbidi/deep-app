@@ -7,7 +7,8 @@ Widget appBarText (context, String text, {double colorOpacity=1}) {
 
   return Text(
     text,
+    textAlign: TextAlign.left,
     style: TextStyle(
-        color: Theme.of(context).accentColor.withOpacity(colorOpacity), fontSize: screenWidth * 0.1),
+        color: Theme.of(context).accentColor.withOpacity(colorOpacity), fontSize: screenWidth * 0.08),
   );
 }
