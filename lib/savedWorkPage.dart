@@ -1,3 +1,4 @@
+import 'package:deep/core/note.dart';
 import 'package:deep/widgets/appBarText.dart';
 import 'package:deep/widgets/backButtonOnSaved.dart';
 import 'package:deep/writingPage.dart';
@@ -9,9 +10,7 @@ import 'package:deep/pageTransitions.dart';
 
 class MyBehavior extends ScrollBehavior {
   BuildContext context;
-  MyBehavior(
-      this.context
-      );
+  MyBehavior(this.context);
 
   @override
   Widget buildViewportChrome(
@@ -29,47 +28,50 @@ class savedNotes extends StatefulWidget {
 
 class _savedNotesState extends State<savedNotes> {
   String data = "empty";
-  static DateTime now = DateTime.now();
-  static String formattedDate = DateFormat('hh:mm a EEE d MMM yy').format(now);
-  static List<List> allNotes = [];
-  static Map allKeys = {};
-  static List<String> notePreviews = [];
-  List listViewList;
 
   @override
   void initState() {
     super.initState();
-    setData();
+    print("working on back");
   }
 
-  Widget deleteSnackBar (String dateTimeKey) {
+  setData() async {
+    Map<String, String> allKeyNValue;
+    allKeyNValue = await Note.getAll();
+    return allKeyNValue;
+  }
+
+  Widget deleteSnackBar(String dateTimeKey) {
     return SnackBar(
       backgroundColor: Theme.of(context).accentColor,
-      content: Text("Delete this note?", style: TextStyle(color: Theme.of(context).primaryColor),),
+      content: Text(
+        "Delete this note?",
+        style: TextStyle(color: Theme.of(context).primaryColor),
+      ),
       action: SnackBarAction(
         label: 'Yes',
         textColor: Theme.of(context).primaryColor,
         onPressed: () async {
           SharedPreferences deleteInstance = await SharedPreferences.getInstance();
-          print(dateTimeKey);
           deleteInstance.remove(dateTimeKey);
+          setState(() {
+          });
         },
       ),
     );
   }
 
-  
-  Widget listContainer(String k, String v) {
+  Widget listContainer(String key, String dateTime, String noteMessage) {
     return Container(
       child: Padding(
         padding: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
         child: InkWell(
           onTap: () {
             print("pressed");
-            Navigator.of(context).push(FadeRoute(page: writingPage(note: v)));
+            Navigator.of(context).pushReplacement(FadeRoute(page: writingPage(note: noteMessage, isEditing: true, noteKey: key)));
           },
           onLongPress: () {
-            ScaffoldMessenger.of(context).showSnackBar(deleteSnackBar(k));
+            ScaffoldMessenger.of(context).showSnackBar(deleteSnackBar(key));
           },
           child: Container(
             child: Row(
@@ -79,7 +81,7 @@ class _savedNotesState extends State<savedNotes> {
                 Padding(
                   padding: EdgeInsets.all(10),
                   child: Text(
-                    v.length > 13 ? v.substring(0, 13) + '...' : v,
+                    noteMessage.length > 13 ? noteMessage.substring(0, 13) + '...' : noteMessage,
                     style: TextStyle(
                         color: Theme.of(context).accentColor, fontSize: 22),
                   ),
@@ -87,7 +89,7 @@ class _savedNotesState extends State<savedNotes> {
                 Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Text(
-                    k,
+                    dateTime,
                     style: TextStyle(
                         color: Theme.of(context).accentColor, fontSize: 14),
                   ),
@@ -100,60 +102,40 @@ class _savedNotesState extends State<savedNotes> {
     );
   }
 
-
-  notesItem(Map notes) {
-    if (notes.keys.length < 1) {
-      return [];
-    }
-    List<Widget> widgets = [];
-    notes.forEach((k, v) {
-      widgets.add(listContainer(k,v));
-    return widgets;
-  });
-  }
-
-  static Future<String> getSavedNotes() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Set name = prefs.getKeys();
-    name.forEach((element) {
-      String value = prefs.getString(element);
-      if (allKeys.keys.contains(element) == false) {
-        // allKeys.add([element, value]);
-        allKeys[element] = value;
-        print(element);
-        print(value);
-        // allNotes.add(prefs.getString(element));
-      }
-    });
-  }
-
-  setData() {
-    getSavedNotes().then((value) {
-      setState(() {
-        if (value != null) {
-          data = value;
-        }
-      });
-    });
-  }
-
   emptyOrnot(context) {
-    listViewList = notesItem(allKeys);
-    if (listViewList.length > 0) {
-      return ListView(
-        shrinkWrap: true,
-        padding: EdgeInsets.only(top: 10),
-        children: listViewList,
-      );
-    } else {
-      return Center(
-        child: Text(
-          "empty",
-          style: TextStyle(color: Color.fromRGBO(255, 255, 255, 0.6), fontSize: 20),
-        ),
-      );
-    }
+    return FutureBuilder(
+      builder: (context, noteMap) {
+        if (noteMap.hasData) {
+          List <String> keys = noteMap.data.keys.toList().where((k) => !k.contains("datetime")).toList();
+          if (keys.length <= 0) {
+            return Center(
+                child: Text("empty",
+                    style: TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 0.6),
+                        fontSize: 20)));
+          } else {
+            return ListView.builder(
+              itemCount: keys.length,
+              itemBuilder: (context, index) {
+                return listContainer(
+                  keys[index],
+                  noteMap.data[keys[index]+"datetime"],
+                  noteMap.data[keys[index]],
+                );
+              },
+            );
+          }
+        } else {
+          return CupertinoActivityIndicator(
+            animating: true,
+            radius: 20,
+          );
+        }
+      },
+      future: setData(),
+    );
   }
+  //TODO fix navigation issue
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +159,7 @@ class _savedNotesState extends State<savedNotes> {
             ),
             Expanded(
               child: ScrollConfiguration(
-                  behavior: MyBehavior(context),
-                  child: emptyOrnot(context)),
+                  behavior: MyBehavior(context), child: emptyOrnot(context)),
             )
           ]),
     ));

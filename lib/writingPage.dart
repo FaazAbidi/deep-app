@@ -1,4 +1,7 @@
 import 'dart:ui';
+import 'package:deep/pageTransitions.dart';
+
+import 'core/note.dart';
 import 'savedWorkPage.dart';
 import 'widgets/appBarText.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,22 +12,27 @@ import 'dart:io';
 
 class writingPage extends StatefulWidget {
   String note;
+  bool isEditing;
+  String noteKey;
 
-  writingPage({Key key, this.note}) : super(key: key);
+  writingPage({Key key, this.note, this.isEditing, this.noteKey}) : super(key: key);
 
   @override
-  _writingPageState createState() => _writingPageState(note);
+  _writingPageState createState() => _writingPageState(note, isEditing, noteKey);
 }
 
 class _writingPageState extends State<writingPage> {
   String note;
-  _writingPageState(this.note);
+  bool isEditing;
+  String noteKey;
+  _writingPageState(this.note, this.isEditing, this.noteKey);
   Color writingColor = Color.fromRGBO(235, 237, 235, 1);
   double appBarTextOpacity = 1.0;
   List<String> notesKeys = [];
   FocusNode _focus = new FocusNode();
   TextEditingController _textEditingController;
   bool focus = false;
+  String originalNote;
 
   changeColor() {
     setState(() {
@@ -36,6 +44,7 @@ class _writingPageState extends State<writingPage> {
   void initState() {
     super.initState();
     _focus.addListener(_onFocusChange);
+    if (isEditing) originalNote = note.substring(0);  // creating original copy if it's editing mode
   }
 
   void _onFocusChange() {
@@ -57,16 +66,28 @@ class _writingPageState extends State<writingPage> {
         backgroundColor: Theme.of(context).primaryColor,
         body: WillPopScope(
           onWillPop: () async {
-            SharedPreferences saving = await SharedPreferences.getInstance();
-            DateTime now = DateTime.now();
-            String formattedDate =
-                DateFormat('hh:mm a EEE d MMM yy').format(now);
 
-            if (note != "") {
-              saving.setString(formattedDate, note);
-              notesKeys.add(formattedDate);
+            if (note != "" && isEditing == false) {
+              Note noteObject = Note(noteText: note);
             }
-            return true;
+
+            else if (isEditing) {
+              if (note != originalNote && note != "") {
+                Note newNote = Note(noteText: note);
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.remove(noteKey);
+                prefs.remove(noteKey+"datetime");
+              }
+            }
+
+            if (isEditing) {
+              Navigator.of(context).pushReplacementNamed("/savedNotesScreen");
+            }
+            else {
+            Navigator.of(context).pop();
+            }
+
+            return;
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,18 +103,24 @@ class _writingPageState extends State<writingPage> {
                         HapticFeedback.selectionClick();
                         FocusScope.of(context).requestFocus(FocusNode());
                         sleep(const Duration(milliseconds: 200));
-                        SharedPreferences saving =
-                            await SharedPreferences.getInstance();
-                        DateTime now = DateTime.now();
-                        String formattedDate = DateFormat('hh:mm a EEE d MMM yy').format(now);
-
-
-                        if (note != "") {
-                          saving.setString(formattedDate, note);
-                          notesKeys.add(formattedDate);
+                        if (note != "" && isEditing == false) {
+                          Note noteObject = Note(noteText: note);
                         }
-                        Navigator.of(context)
-                            .popUntil((route) => route.isFirst);
+                        else if (isEditing) {
+                          if (note != originalNote && note != "") {
+                            Note newNote = Note(noteText: note);
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.remove(noteKey);
+                            prefs.remove(noteKey+"datetime");
+                          }
+                        }
+                        
+                        if (isEditing) {
+                          Navigator.of(context).popAndPushNamed("/savedNotesScreen");
+                        }
+                        else {
+                          Navigator.of(context).pop();
+                        }
                       },
                       child: Padding(
                         padding: EdgeInsets.only(left: 20, right: 12),

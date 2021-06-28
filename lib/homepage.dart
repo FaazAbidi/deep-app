@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    mainButton(context, Icons.border_color, writingPage(note: "",)),
+                    mainButton(context, Icons.border_color, writingPage(note: "", isEditing: false,)),
                     SizedBox(width: screenWidth * 0.08),
                     mainButton(context, Icons.library_books, savedNotes())
                   ],

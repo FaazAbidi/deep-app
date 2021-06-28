@@ -1,3 +1,5 @@
+import 'package:deep/savedWorkPage.dart';
+import 'package:deep/writingPage.dart';
 import 'package:flutter/material.dart';
 import 'package:deep/homepage.dart';
 
@@ -21,6 +23,10 @@ class MyApp extends StatelessWidget {
             bodyText1: TextStyle(fontSize: 50, fontFamily: "MavenPro")),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      routes: <String, WidgetBuilder> {
+      '/writingScreen' : (BuildContext context) => new writingPage(),
+      '/savedNotesScreen' : (BuildContext context) => new savedNotes(),
+    },
       home: HomePage(),
     );
   }

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,19 +9,26 @@ class Note {
    String dateTimeText;
    int ID;
 
-   Note({this.noteText}) {
+   Note({@required this.noteText}) {
      assignID();
      assignDateTime();
    }
 
-   assignDateTime() async {
+   getByID(String id) async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     noteText = prefs.getString(id);
+     dateTimeText = prefs.getString(id+"datetime");
+     return this;
+   }
+
+   void assignDateTime() async {
      DateTime now = DateTime.now();
      String formattedDate = DateFormat('hh:mm a EEE d MMM yy').format(now);
      SharedPreferences prefs = await SharedPreferences.getInstance();
      prefs.setString(ID.toString()+"datetime", formattedDate);
    }
 
-   assignID () async {
+   void assignID () async {
      SharedPreferences prefs = await SharedPreferences.getInstance();
      var random = new Random();
      while (true) {
@@ -33,19 +42,38 @@ class Note {
    }
 
 
-   removeSharedPreference () {
-     return;
+   void removeSharedPreference () async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     prefs.remove(ID.toString());
    }
 
-   getDateTime() {
+   getDateTime() async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     dateTimeText = prefs.getString(ID.toString()+"datetime");
      return dateTimeText;
    }
 
-   getNoteText() {
+   getNoteText() async {
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     noteText = prefs.getString(ID.toString());
      return noteText;
    }
 
    getID() {
      return ID;
    }
+
+   static Future<Map<String,String>> getAll() async {
+     print("inside");
+     Map <String, String> all = {};
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     Set keys = prefs.getKeys();
+      print(keys);
+     keys.forEach((element) async {
+       all[element] = prefs.getString(element);
+     });
+
+     return all;
+   }
+
 }
